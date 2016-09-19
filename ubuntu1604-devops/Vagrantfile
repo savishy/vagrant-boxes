@@ -14,17 +14,22 @@ Vagrant.configure("2") do |config|
   end
 
   # install puppet on machine
+  # install puppet-modules
+  # On Windows I have tried r10k as well as rcoleman-puppet_module
+  # neither of these appear to work.
+
   config.vm.provision :shell, :inline => <<-SHELL
-    apt-get update
+    apt-get update -q
     apt-get install -y puppet
+    puppet module install puppetlabs-stdlib
+    puppet module install nvogel-ansible
+    puppet module install garethr-docker
   SHELL
 
   # provision with puppet
   config.vm.provision :puppet do |puppet|
-    #puppet.manifests_path = "manifests"
-    #puppet.module_path = "modules"
-    puppet.environment = "devopsprov"
-    puppet.environment_path = "environments"
+    puppet.manifests_path = "manifests"
+    puppet.module_path = "modules"
     #puppet.options = "--verbose --debug"
   end
 
