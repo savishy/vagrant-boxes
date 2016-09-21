@@ -11,4 +11,13 @@ class system {
   package { "wget":
       ensure => latest
     }
+  package { "tar":
+      ensure => latest
+    }
+  package { "zip":
+      ensure => latest
+    }
+  package { "unzip":
+      ensure => latest
+    }
 }
