@@ -22,10 +22,8 @@ Vagrant.configure("2") do |config|
 
   # provision with puppet
   config.vm.provision :puppet do |puppet|
-    # using puppet "environments" to workaround
-    # vagrant issue #3740 https://github.com/mitchellh/vagrant/issues/3740
-    puppet.environment = "production"
-    puppet.environment_path = "environments"
+    puppet.module_path = "environments/production/modules"
+    puppet.manifests_path = "environments/production/manifests/"
     #puppet.options = "--verbose --debug"
 
   end
