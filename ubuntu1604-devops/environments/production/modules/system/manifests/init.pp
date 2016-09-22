@@ -2,6 +2,11 @@ class system {
   package { "emacs":
       ensure => latest
     }
+  file { 'emacs config':
+    path => '/home/vagrant',
+    source => 'puppet:///modules/system/emacs',
+    recurse => true
+  }
   package { "vim":
       ensure => latest
     }
