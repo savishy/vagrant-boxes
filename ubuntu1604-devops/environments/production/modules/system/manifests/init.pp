@@ -16,6 +16,9 @@ class system {
   package { "wget":
       ensure => latest
     }
+  package { "git":
+      ensure => latest
+    }
   package { "tar":
       ensure => latest
     }

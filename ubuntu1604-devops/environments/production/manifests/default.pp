@@ -1,5 +1,6 @@
 include system
 include ansible
+include docker-extras
 
 # setup docker as a daemon
 # add vagrant to docker users for sudoless access
