@@ -34,6 +34,7 @@ class install_docker {
   apt::source { 'docker':
   location => 'http://apt.dockerproject.org/repo',
   repos    => 'main',
+  release  => 'ubuntu-trusty',
   notify  => Exec['apt_update'],
   } ~>  # packages
   package { 'apt-transport-https':
