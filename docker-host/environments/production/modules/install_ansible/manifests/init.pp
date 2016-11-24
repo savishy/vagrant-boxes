@@ -8,6 +8,6 @@ class install_ansible {
     notify => Exec['apt_update']
   }
   package { 'ansible':
-    ensure => installed
+    ensure => latest
   }
 }

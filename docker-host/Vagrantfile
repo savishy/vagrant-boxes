@@ -27,6 +27,11 @@ Vagrant.configure("2") do |config|
   config.vm.provider :virtualbox do |vb|
     # set the name of box in Virtualbox GUI
     vb.name = "docker-ansible-host"
+    # allow access to internet
+    # (esp machines listed in your etc hosts)
+    # http://stackoverflow.com/a/18457420/682912
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   # Docker-Ready Box.
