@@ -54,10 +54,7 @@ class install_docker {
   repos    => 'main',
   release  => 'ubuntu-trusty',
   notify  => Exec['apt_update'],
-  } ~>  # packages
-  package {'colordiff':
-    ensure => 'latest'
-  } ~>
+  } ~>  # packages needed for docker
   package { 'apt-transport-https':
     ensure => 'latest',
     require => Exec['apt_update']
