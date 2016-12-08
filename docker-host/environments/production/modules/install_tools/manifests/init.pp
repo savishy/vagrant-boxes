@@ -12,8 +12,11 @@ define puppet::binary::pp ($binary = $title) {
   }
 }
 
+# TODO: Install pip
+# TODO: Module for installing python modules.
+
 # using defined type for iteration, somewhere else in your manifests
-$binaries = ["colordiff","vim","emacs","git", "jq"]
+$binaries = ["colordiff","vim","emacs","git", "jq", "unzip", "zip"]
 
 puppet::binary::pp { $binaries: }
 }
