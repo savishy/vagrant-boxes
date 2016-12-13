@@ -8,7 +8,10 @@ Vagrant.configure("2") do |config|
   # from your host machine.
   # the host port is set to something random (4243) to avoid
   # trouble with existing docker daemons you might have on your host.
-  config.vm.network "forwarded_port", guest: 4243, host: 4243
+
+  ["4243","3306","8080"].each do |port|
+      config.vm.network "forwarded_port", guest: port, host: port
+  end
 
   # fix for "stdin: is not a tty" and "ttyname: inappropriate ioctl for device"
   # https://github.com/mitchellh/vagrant/issues/1673#issuecomment-28288042
@@ -22,11 +25,11 @@ Vagrant.configure("2") do |config|
     owner: "vagrant", group: "vagrant"
 
   # set machine name in vagrant status
-  config.vm.define "docker-ansible-host" do |devops|
+  config.vm.define "devops-host" do |devops|
   end
   config.vm.provider :virtualbox do |vb|
     # set the name of box in Virtualbox GUI
-    vb.name = "docker-ansible-host"
+    vb.name = "devops-host"
     # allow access to internet
     # (esp machines listed in your etc hosts)
     # http://stackoverflow.com/a/18457420/682912
