@@ -25,11 +25,11 @@ Vagrant.configure("2") do |config|
     owner: "vagrant", group: "vagrant"
 
   # set machine name in vagrant status
-  config.vm.define "devops-host" do |devops|
+  config.vm.define "docker-ansible-host" do |devops|
   end
   config.vm.provider :virtualbox do |vb|
     # set the name of box in Virtualbox GUI
-    vb.name = "devops-host"
+    vb.name = "docker-ansible-host"
     # allow access to internet
     # (esp machines listed in your etc hosts)
     # http://stackoverflow.com/a/18457420/682912
