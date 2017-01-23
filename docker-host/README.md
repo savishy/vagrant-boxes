@@ -26,8 +26,6 @@ Bringing up the VM and provisioning it usually takes 10-20 minutes the first tim
 
 ## Notes
 
-
-
 ## What can I do with this Vagrant box?
 
 ### Use it as a Docker Server!
@@ -59,6 +57,19 @@ You should see output corresponding to `docker info`. The cool part is you don't
   "Name": "ubuntu-14",
   ...
 ```
+
+**Note when running Dockerized applications inside the box:**
+
+The Vagrant Box forwards only a limited set of ports from the *host* (your machine) to the *VM* (the Vagrant Box).
+
+Say you start a Tomcat container inside the running Vagrant Box:
+
+`docker run -d -it tomcat:7-jre8`
+
+This container would start up fine, but you would need to explicitly publish the port as well in order to be able to access it from *your host* eg from a browser.
+
+`docker run -d -p 8080:8080 -it tomcat:7-jre8`
+
 
 ### Use it as an Ansible Control Machine!
 
