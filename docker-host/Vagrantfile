@@ -9,7 +9,13 @@ Vagrant.configure("2") do |config|
   # the host port is set to something random (4243) to avoid
   # trouble with existing docker daemons you might have on your host.
 
-  ["4243","3306","8080"].each do |port|
+  # 4243: docker
+  # 4440: rundeck
+  # 3306: mysql server
+  # 8080: http application
+  # 8081: http application
+  # 9000: sonarqube
+  ["4243","4440","3306","8080","8081","9000"].each do |port|
       config.vm.network "forwarded_port", guest: port, host: port
   end
   config.vm.network "private_network", ip: "84.84.87.87"
