@@ -76,3 +76,19 @@ This container would start up fine, but you would need to explicitly publish the
 Ansible does not run on Windows. (Not easily any way.)
 
 This VM comes preinstalled with Ansible, so you can provision Ansible hosts easily.
+
+## Troubleshooting
+
+### If you receive any error with VBoxManage, run `vagrant reload`
+
+If you receive an error similar to the following when doing a `vagrant up`:
+
+```
+There was an error while executing `VBoxManage`, a CLI used by Vagrant
+for controlling VirtualBox. The command and stderr is shown below.
+
+Command: ["hostonlyif", "create"]
+VBoxManage.exe: error: Failed to create the host-only adapter
+```
+
+Try running a `vagrant reload`.
