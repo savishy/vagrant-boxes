@@ -6,7 +6,7 @@ class install_ansible {
   apt::ppa {'ppa:ansible/ansible':
     require => Package['software-properties-common'],
     notify => Exec['apt_update']
-  }
+  } ~>
   package { 'ansible':
     ensure => latest
   }
