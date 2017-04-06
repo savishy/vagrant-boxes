@@ -28,12 +28,18 @@ In a terminal, execute the following:
 ## Registry Info
 
 Registry URL:
+
 ```
 84.84.87.88:5000
 ```
 
-1. A registry UI is not created. (This is a `TODO` for me)
-1. You can query the list of images in the registry using the registry API. See the notes below.
+Registry UI:
+
+Load the following in a browser:
+
+```
+http://84.84.87.88:9090
+```
 
 ## Notes
 
