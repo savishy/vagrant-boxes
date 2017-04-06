@@ -72,15 +72,30 @@ curl -X GET http://84.84.87.88:5000/v2/_catalog
 ### Connecting to this registry
 If you want to pull images from this registry, your Docker Daemon will need to be modified.
 
-**Example for Ubuntu 14.04**
+#### From Ubuntu 14.04 and Docker Engine
+
 On Ubuntu 14.04, the following additional parameter needs to be added to `/etc/default/docker`.
 
 ```
-# Use DOCKER_OPTS to modify the daemon startup options.
-DOCKER_OPTS=" ... ... ... --insecure-registry=84.84.87.88:5000"
+# Use DOCKER_OPTS to modify the daemon startup options$DOCKER_OPTS
+DOCKER_OPTS="$DOCKER_OPTS --insecure-registry 84.84.87.88:5000 --registry-mirror=http://84.84.87.88:5000"
 ```
+
 This points the Docker daemon to use the registry in insecure mode.
 
+**Note**: On Docker 1.12 at least, the options are easy to get wrong!
+* `--insecure-registry` seems to work only with a bare IP and *no `=` sign.*
+* `--registry-mirror` seems to *require* the `=` sign and an `http://`.
+
+#### From Windows x64 and Docker Toolbox
+
+
+```
+docker-machine create --driver virtualbox --engine-insecure-registry 84.84.87.88:5000 --eng
+ine-registry-mirror=http://84.84.87.88:5000 docker-registry-client
+
+eval $(docker-machine env docker-registry-client)
+```
 
 ### References
 
