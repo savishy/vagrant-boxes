@@ -1,6 +1,8 @@
 # Docker Registry: Vagrant VM #
 
-This box provisions a Virtualbox VM containing a Docker Registry.
+This box provisions a Virtualbox VM containing two things
+* a Docker Registry.
+* a Docker Host (daemon).
 
 **Warning!** This is an insecure registry for *development use and POCs only.*
 
