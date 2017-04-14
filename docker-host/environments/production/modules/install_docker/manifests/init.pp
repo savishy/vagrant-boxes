@@ -77,10 +77,4 @@ class install_docker {
     mode            => '0777',
   }
 
-  # download docker machine
-  common::remote_file{'/usr/local/bin/docker-machine':
-    remote_location => 'https://github.com/docker/machine/releases/download/0.9.0/docker-machine-Linux-x86_64',
-    mode            => '0777',
-  }
-
 }

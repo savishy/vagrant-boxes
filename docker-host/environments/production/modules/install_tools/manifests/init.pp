@@ -31,9 +31,6 @@ package { "vagrant":
 provider => dpkg,
 ensure   => latest,
 source   => "/tmp/vagrant_1.9.3_x64.deb"
-} ~>
-exec { "vagrant-aws":
-  command => "vagrant plugin install vagrant-aws",
 }
 
 
