@@ -10,16 +10,28 @@ Vagrant.configure("2") do |config|
     # Customize the amount of memory on the VM:
     vb.memory = "1024"
     vb.name = "docker-jenkins"
+    # allow access to internet
+    # (esp machines listed in your etc hosts)
+    # http://stackoverflow.com/a/18457420/682912
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    # 2 GB RAM
+    vb.customize ["modifyvm", :id,"--memory", "2048"]
+
   end
 
   # fix for "stdin: is not a tty" and "ttyname: inappropriate ioctl for device"
   # https://github.com/mitchellh/vagrant/issues/1673#issuecomment-28288042
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
+  # jenkins home dir sometimes causes permission issues
   config.vm.provision :shell,
     inline: "sudo mkdir -p /opt/jenkins_home && sudo chmod 777 /opt/jenkins_home"
 
-  config.vm.provision "docker" do |docker|
+  config.vm.provision :docker do |docker|
+    # download some images
+    docker.pull_images "savishy/docker-ssh:latest"
+    # run jenkins docker container
     docker.run "savishy/docker-jenkins:1.3",
       restart: "always",
       daemonize: true,
@@ -27,5 +39,9 @@ Vagrant.configure("2") do |config|
       args: "--name jenkins -v '/opt/jenkins_home:/var/lib/jenkins' -p '9095:8081' -p '50000:50000'"
   end
 
+  # write docker service configuration
+  config.vm.provision :shell,
+    inline: "sudo cp -v /vagrant/docker_service /etc/default/docker \
+    && sudo service docker restart"
 
 end

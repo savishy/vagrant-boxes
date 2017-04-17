@@ -1,0 +1,7 @@
+# Docker Registry Service Configuration
+# Docker daemon listening on port 2375.
+# Docker registry listening on port 5000
+# Docker registry pass through.
+
+DOCKER_OPTS="-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"
+DOCKER_OPTS="$DOCKER_OPTS --insecure-registry http://localhost:5000 --registry-mirror http://localhost:5000"
