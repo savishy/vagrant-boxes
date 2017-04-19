@@ -48,6 +48,13 @@ exec {'download-jdk-8u112':
   cwd => '/tmp',
   command => '/usr/bin/wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u112-b15/jdk-8u112-linux-x64.tar.gz',
   creates => '/tmp/jdk-8u112-linux-x64.tar.gz'
+} ~>
+file { '/opt/jdk-8u112-linux-x64':
+    ensure => 'directory',
+} ~>
+exec { 'unzip-jdk-8u112':
+  cwd => '/tmp',
+  command => '/usr/bin/sudo /bin/tar xvfz jdk-8u112-linux-x64.tar.gz -C /opt/jdk-8u112-linux-x64/',
 }
 
 }
