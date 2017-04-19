@@ -1,6 +1,6 @@
 include apt
 require 'facter'
-class install_docker {
+class docker {
 
 
   # create docker group
@@ -17,13 +17,6 @@ class install_docker {
 
   # realize virtual resource above.
   realize(User['vagrant'])
-
-  # always update
-  class { 'apt':
-      update => {
-        frequency => 'always'
-      }
-  }
 
   # docker key
   # apt::key {'58118E89F3A912897C070ADBF76221572C52609D':
@@ -60,7 +53,7 @@ class install_docker {
   # deploy templated docker conf.
   file {'/etc/default/docker':
     ensure => file,
-    content => template('install_docker/docker.conf'),
+    content => template('docker/docker.conf'),
     notify => Service['docker'],
     mode => '0644',
     owner => 'root',

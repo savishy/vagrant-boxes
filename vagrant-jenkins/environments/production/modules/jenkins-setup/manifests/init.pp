@@ -1,12 +1,6 @@
 include apt
 class jenkins-setup {
 
-  # always update
-  class { 'apt':
-      update => {
-        frequency => 'always'
-      }
-  }
   # https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+on+Ubuntu
   # add jenkins key
   exec { 'jenkins-key':

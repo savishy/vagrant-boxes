@@ -1,5 +1,5 @@
 include apt
-class install_ansible {
+class ansible {
   package { 'software-properties-common':
     ensure => installed,
   }
@@ -8,6 +8,6 @@ class install_ansible {
     notify => Exec['apt_update']
   } ~>
   package { 'ansible':
-    ensure => latest
+    ensure => "2.3.0.0-1ppa~trusty"
   }
 }
