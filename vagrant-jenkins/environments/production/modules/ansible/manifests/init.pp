@@ -8,6 +8,6 @@ class ansible {
     notify => Exec['apt_update']
   } ~>
   package { 'ansible':
-    ensure => "2.3.0.0-1ppa~trusty"
+    ensure => "latest"
   }
 }

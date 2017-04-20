@@ -31,7 +31,7 @@ class docker {
   apt::source { 'docker':
   location => 'http://apt.dockerproject.org/repo',
   repos    => 'main',
-  release  => 'ubuntu-trusty',
+  release  => 'ubuntu-xenial',
   notify  => Exec['apt_update'],
   } ~>  # packages needed for docker
   package { 'apt-transport-https':

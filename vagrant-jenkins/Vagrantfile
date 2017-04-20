@@ -37,8 +37,8 @@ Vagrant.configure("2") do |config|
   end
 
   # Docker-Ready Box.
-  config.vm.box = "phusion/ubuntu-14.04-amd64"
-
+  #config.vm.box = "phusion/ubuntu-14.04-amd64"
+  config.vm.box = "bento/ubuntu-16.04"
   # install puppet before provisioning with puppet (agentless mode)
   config.vm.provision :shell, :path => "../scripts/install-puppet.sh"
 
