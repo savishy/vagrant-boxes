@@ -44,17 +44,15 @@ $binaries = [ "colordiff",
 puppet::binary::pp { $binaries: }
 
 #install JDK 8
-exec {'download-jdk-8u112':
+exec {'download-jdk1.8.0_112':
   cwd => '/tmp',
   command => '/usr/bin/wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u112-b15/jdk-8u112-linux-x64.tar.gz',
   creates => '/tmp/jdk-8u112-linux-x64.tar.gz'
 } ~>
-file { '/opt/jdk-8u112-linux-x64':
-    ensure => 'directory',
-} ~>
-exec { 'unzip-jdk-8u112':
+exec { 'unzip-jdk1.8.0_112':
   cwd => '/tmp',
-  command => '/usr/bin/sudo /bin/tar xvfz jdk-8u112-linux-x64.tar.gz -C /opt/jdk-8u112-linux-x64/',
+  command => '/usr/bin/sudo /bin/tar xvfz jdk-8u112-linux-x64.tar.gz -C /opt/',
+  creates => '/opt/jdk1.8.0_112/bin/java'
 }
 
 }

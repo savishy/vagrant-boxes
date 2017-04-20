@@ -21,5 +21,17 @@ class jenkins-setup {
   } ~>
   package { 'jenkins':
       ensure => 'latest'
-    }
+  } ~>   # deploy templated docker conf.
+  file {'/etc/default/jenkins':
+    ensure => file,
+    content => template('jenkins-setup/jenkins_defaults'),
+    notify => Service['jenkins'],
+    mode => '0644',
+    owner => 'root',
+    group => 'root'
+  } ~>
+  service { 'jenkins':
+    ensure => 'running'
+  }
+
 }
