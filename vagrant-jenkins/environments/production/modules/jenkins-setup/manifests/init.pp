@@ -7,7 +7,8 @@ class jenkins-setup {
     command => '/usr/bin/wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -'
     } ~>
   exec { '/etc/apt/sources.list.d/jenkins.list':
-    command => '/bin/echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+    command => '/bin/echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list',
+    notify  => Exec['apt_update'],
   } ~>
   apt::key { 'puppet gpg key':
       id     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
