@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.network "private_network", ip: "84.84.87.90"
-  ["9095"].each do |port|
+  ["4244","9095"].each do |port|
       config.vm.network "forwarded_port", guest: port, host: port
   end
 
@@ -10,13 +10,6 @@ Vagrant.configure("2") do |config|
 
   # if machine fails to boot don't wait too long.
   config.vm.boot_timeout = 60
-
-  # create a synced folder `pwd`/work -> /work
-  config.vm.synced_folder "#{ENV['HOMEDRIVE']}\\#{ENV['HOMEPATH']}\\jenkins-home",
-    "/var/lib/jenkins",
-    create: true,
-    owner: "vagrant",
-    group: "vagrant"
 
 
   # set machine name in vagrant status
@@ -51,6 +44,8 @@ Vagrant.configure("2") do |config|
 
   puts "-----------------------------"
   puts "JENKINS VAGRANT BOX"
+  puts "Mount Point: #{ENV['HOMEDRIVE']}\\#{ENV['HOMEPATH']}\\jenkins-home"
+  puts "This dir is the Jenkins Home Dir."
   puts "-----------------------------"
 
 end
