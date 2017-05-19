@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-16.04"
+  config.vm.network "private_network", ip: "84.84.87.91"
+  # set machine name in vagrant status
+  config.vm.define "vagrant-ssh"
+  config.vm.hostname = "vagrant-ssh"
+  config.vm.boot_timeout = 60
+
+  config.vm.provider "virtualbox" do |vb|
+    # Customize the amount of memory on the VM:
+    vb.memory = "1024"
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+   end
+
+   ###
+   # ssh configuration
+   # prevent vagrant from inserting a random key
+   config.ssh.insert_key = false
+
+   # tell vagrant to use insecure key initially for authentication.
+   # this is needed for the provisioning step to work.
+
+   config.ssh.private_key_path = ["./vagrant_ssh_key", "~/.vagrant.d/insecure_private_key"]
+   # fix for "stdin: is not a tty" and "ttyname: inappropriate ioctl for device"
+   # https://github.com/mitchellh/vagrant/issues/1673#issuecomment-28288042
+   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
+   # insert our own key into .ssh directory.
+   # http://stackoverflow.com/a/30075596/682912
+   config.vm.provision "file", source: "vagrant_ssh_key.pub", destination: "~/.ssh/authorized_keys"
+
+
+   puts "--------------------------------------------------------------------"
+   puts "This box allows SSH and can be used as a test host for provisioning."
+   puts "--------------------------------------------------------------------"
+
+end
