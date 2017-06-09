@@ -14,6 +14,8 @@ Windows 7 or 10 x64, with at least 4 GB RAM, and:
 1. Virtualbox 5.0 or higher.
 1. Hardware Virtualization enabled in BIOS.
 
+*This registry will not get provisioned in a Virtualized Environment. Use [docker-provider/Vagrantfile](docker-provider/Vagrantfile) instead.*
+
 ## How to run
 
 In a terminal, execute the following:

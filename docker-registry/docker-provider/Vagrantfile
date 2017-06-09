@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+#  config.vm.network "forwarded_port", guest: 5000, host: 5000
+  config.vm.define "docker-registry" do |backend_container|
+    backend_container.vm.provider "docker" do |d|
+      d.name = "docker-registry"
+      d.image = "registry:2"
+      d.ports = ["5000:5000"]
+    end
+  end
+
+  # config.vm.provider "docker" do |d|
+  #   # start registry
+  #   d.run "registry:2",
+  #     restart: "always",
+  #     daemonize: true,
+  #     auto_assign_name: false,
+  #     args: "-p '5000:5000' --name 'registry'"
+  #   # start registry UI
+  #   d.run "konradkleine/docker-registry-frontend:v2",
+  #     daemonize: true,
+  #     restart: "always",
+  #     auto_assign_name: false,
+  #     args: "-p 9095:80 --name 'registry-frontend' -e ENV_DOCKER_REGISTRY_HOST=84.84.87.88 -e ENV_DOCKER_REGISTRY_PORT=5000"
+
+  # end
+end
+
+Vagrant.configure("2") do |config2|
+  config2.vm.define "docker-registry-frontend" do |ui_container|
+    ui_container.vm.provider "docker" do |d2|
+      d2.name = "docker-registry-frontend"
+      d2.image = "konradkleine/docker-registry-frontend:v2"
+      d2.env = {
+        "ENV_DOCKER_REGISTRY_HOST":"localhost",
+        "ENV_DOCKER_REGISTRY_PORT":"5000"
+      }
+      d2.ports = [ "9095:80" ]
+    end
+  end
+end
