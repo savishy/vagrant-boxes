@@ -23,6 +23,15 @@ Vagrant.configure(2) do |config|
       ec2.tags = {
         'Name'         => $ec2_instance
       }
+      ec2.block_device_mapping = [
+        {
+            'DeviceName' => "/dev/sda1",
+            'VirtualName' => "samba-share-data",
+            'Ebs.VolumeSize' => 32,
+            'Ebs.DeleteOnTermination' => true,
+            'Ebs.VolumeType' => 'gp2',
+        }
+      ]
       override.vm.synced_folder ".", "/vagrant", disabled: true
 
     end
