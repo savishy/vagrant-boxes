@@ -1,3 +1,5 @@
 ---
-- hosts: all
-  roles: geerlingguy.samba
+- name: Setup Samba
+  hosts: all
+  roles:
+    - {role: geerlingguy.samba, become: true}
