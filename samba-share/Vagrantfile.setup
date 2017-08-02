@@ -1,0 +1,33 @@
+#######
+# Setup
+#######
+
+##################
+# required plugins
+##################
+
+$errMsg = ""
+required_plugins = ["vagrant-aws","vagrant-awsinfo"]
+required_plugins.each { |r|
+  unless Vagrant.has_plugin?(r)
+    $errMsg = $errMsg + "Vagrant Plugin #{r} required! Please run vagrant plugin install #{r} first.\n"
+    $pluginError = true
+  end
+}
+if ($pluginError) then
+  raise($errMsg)
+end
+
+
+# https://github.com/johntdyer/vagrant-awsinfo
+# read env vars and store them
+# Variables have to be global to be accessible from main Vagrantfile
+# ref: http://stackoverflow.com/a/1047482/682912
+$keypair_name = ENV['VAGRANT_AWS_KEYPAIR_NAME']
+$access_key_id = ENV['VAGRANT_AWS_ACCESS_KEY']
+$secret_access_key = ENV['VAGRANT_AWS_SECRET_KEY']
+$security_groups = ENV['VAGRANT_AWS_SECURITY_GROUP']
+$private_key_path = ENV['VAGRANT_AWS_KEY_PATH']
+
+# Names of the machines as visible in AWS Console
+$ec2_instance = "samba-share"
