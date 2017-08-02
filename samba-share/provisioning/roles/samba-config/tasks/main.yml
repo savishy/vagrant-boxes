@@ -1,0 +1,10 @@
+---
+- name: ensure samba directory exists
+  file: name={{samba_share_dir}} state=directory owner={{samba_user}} group={{samba_group}} mode=0755
+- name: copy templated smb.conf
+  template: src=smb.conf dest=/etc/samba/smb.conf
+  notify: restart smb
+- name: set smb password
+  shell: (echo {{samba_password}}; echo {{samba_password}}) | smbpasswd -a {{samba_user}} -s
+- name: run testparm once
+  command: testparm

@@ -1,0 +1,5 @@
+---
+samba_share_dir: "/opt/samba-share"
+samba_user: "ubuntu"
+samba_group: "ubuntu"
+samba_password: "ubuntu"

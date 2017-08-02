@@ -3,3 +3,4 @@
   hosts: all
   roles:
     - {role: geerlingguy.samba, become: true}
+    - {role: samba-config, become: true}
