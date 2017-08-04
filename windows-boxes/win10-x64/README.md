@@ -11,3 +11,4 @@ This is a Vagrant Windows 10 VM. The use-case for this is
 ## Notes
 
 * Average boot time is 20-30 minutes.
+* To open up a shell connection do `vagrant powershell`.
