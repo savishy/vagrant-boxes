@@ -1,6 +1,22 @@
 # box for trying out docker for windows
+# Chocolatey is preinstalled
 # https://app.vagrantup.com/senglin/boxes/win-10-enterprise-vs2015community
+    puts "HELLOOOO"
 Vagrant.configure("2") do |config|
-  config.vm.box = "senglin/win-10-enterprise-vs2015community"
-  config.vm.box_version = "1.0.0"
+    config.vm.provider :virtualbox do |vb|
+    config.vm.box = "senglin/win-10-enterprise-vs2015community"
+    config.vm.box_version = "1.0.0"
+    config.vm.communicator = "winrm"
+    config.winrm.transport = :plaintext
+    config.winrm.basic_auth_only = true
+    config.vm.guest = :windows
+    vb.customize ["modifyvm", :id,"--memory", "4096"]
+    #vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    #vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  end
+  config.vm.provision :shell do |s|
+    s.path = "scripts/install-docker.ps1"
+    s.privileged = true
+    s.powershell_args = "-executionpolicy unrestricted"
+  end
 end
