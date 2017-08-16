@@ -1,14 +1,6 @@
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
 
-  # docker port fowarding
-  # this allows you to access docker daemon running inside the VM,
-  # from your host machine.
-  # the host port is set to something random (4243) to avoid
-  # trouble with existing docker daemons you might have on your host.
-
+  # port forwarding
   # 4243: docker
   # 4440: rundeck
   # 3306: mysql server
@@ -36,11 +28,12 @@ Vagrant.configure("2") do |config|
     owner: "vagrant", group: "vagrant"
 
   # set machine name in vagrant status
-  config.vm.define "docker-ansible-host" do |devops|
+  machine_name = "devops-host"
+  config.vm.define machine_name do |devops|
   end
   config.vm.provider :virtualbox do |vb|
     # set the name of box in Virtualbox GUI
-    vb.name = "docker-ansible-host"
+    vb.name = machine_name
     # allow access to internet
     # (esp machines listed in your etc hosts)
     # http://stackoverflow.com/a/18457420/682912
@@ -48,12 +41,33 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
 
     # increase allocated RAM so that docker containers
-    # can run 
+    # can run
     vb.customize ["modifyvm", :id,"--memory", "2048"]
   end
 
-  # Docker-Ready Box.
-  config.vm.box = "phusion/ubuntu-14.04-amd64"
+  config.vm.provider :hyperv do |hv|
+    hv.vmname = machine_name
+    hv.cpus = 1
+    hv.memory =  2048
+    hv.enable_virtualization_extensions = true
+    hv.ip_address_timeout = 240
+    hv.vm_integration_services = {
+      guest_service_interface: true,
+      heartbeat: true,
+      key_value_pair_exchange: true,
+      shutdown: true,
+      time_synchronization: true,
+      vss: true
+    }
+  end
+
+
+  # Generic Box.
+  # config.vm.box = "generic/ubuntu1604"
+  config.vm.box = "kmm/ubuntu-xenial64"
+
+  # disable unattended upgrades which cause provisioning to fail
+  config.vm.provision :shell, :path => "../scripts/disable-unattended-upgrades.sh"
 
   # install puppet before provisioning with puppet (agentless mode)
   config.vm.provision :shell, :path => "../scripts/install-puppet.sh"
@@ -66,13 +80,8 @@ Vagrant.configure("2") do |config|
     puppet.hiera_config_path = "hiera/hiera.yaml"
   end
 
-  puts "-----------------------------"
-  puts "Mount Point: #{ENV['HOMEDRIVE']}\\#{ENV['HOMEPATH']}\\work"
-  puts "Use this folder to share work between your host machine and the VM."
-  puts "Forwarded Ports: "
-  puts "- 4243: This port exposes the Docker Remote API to your host.
-  You can hit http://localhost:4243 with API requests and
-  Docker API running inside the VM will execute these requests."
-  puts "-----------------------------"
+  puts "---------------------------------"
+  puts "DevOps Automation Dev Environment"
+  puts "---------------------------------"
 
 end
