@@ -30,15 +30,28 @@ class install_docker {
   #   options => '--keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D',
   # } ->  # docker source
 
-  apt::key {'58118E89F3A912897C070ADBF76221572C52609D':
-    id => '58118E89F3A912897C070ADBF76221572C52609D',
-    server => 'hkp://ha.pool.sks-keyservers.net:80',
-  }
+  # apt::key {'58118E89F3A912897C070ADBF76221572C52609D':
+  #   id => '58118E89F3A912897C070ADBF76221572C52609D',
+  #   server => 'hkp://ha.pool.sks-keyservers.net:80',
+  # }
 
+  apt::key {'0EBFCD88':
+    key_source => 'https://download.docker.com/linux/ubuntu/gpg',
+  } ~>
+  package { 'docker':
+    ensure => 'absent'
+  } ~>
+  package { 'docker-engine':
+    ensure => 'absent'
+  } ~>
+  package { 'docker.io':
+    ensure => 'absent'
+  } ~>
   apt::source { 'docker':
-  location => 'http://apt.dockerproject.org/repo',
-  repos    => 'main',
-  release  => 'ubuntu-trusty',
+  location => 'https://download.docker.com/linux/ubuntu',
+  repos    => 'stable',
+  release  => 'xenial',
+  architecture => 'amd64',
   notify  => Exec['apt_update'],
   } ~>  # packages needed for docker
   package { 'apt-transport-https':
@@ -54,19 +67,28 @@ class install_docker {
   package {'linux-image-extra-virtual':
     ensure => 'latest'
   } ~>  # install docker
-  package {"docker-engine":
+  package {"docker-ce":
     ensure => 'latest'
   } ~>
-  # deploy templated docker conf.
-  file {'/etc/default/docker':
-    ensure => file,
-    content => template('install_docker/docker.conf'),
-    notify => Service['docker'],
+  file {'/etc/systemd/system/docker.service.d/':
+    ensure => directory,
     mode => '0644',
     owner => 'root',
     group => 'root'
-  }
-
+  } ~>
+  file {'/etc/systemd/system/docker.service.d/docker.conf':
+    ensure => file,
+    content => template('install_docker/docker.conf.systemd'),
+    mode => '0644',
+    owner => 'root',
+    group => 'root',
+    notify => Service['docker'],
+  } ~>
+  exec { 'systemd-reload':
+  command     => 'systemctl daemon-reload',
+  path        => [ '/usr/bin', '/bin', '/usr/sbin' ],
+  refreshonly => true,
+}
   # ensure docker service running.
   service {'docker':
     ensure => 'running'
