@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  puts "--------------------------------------------------------------------"
+  puts "This box allows SSH and can be used as a test host for provisioning."
+  puts "--------------------------------------------------------------------"
+  
+  vmIndex = [0,1,2]
+  
+  vmIndex.each do |i|
+
+	machine_name = "vagrant-ssh-#{i}"
+    config.ssh.insert_key = false
+	config.ssh.private_key_path = ["./vagrant_ssh_key", "#{ENV['HOMEDRIVE']}/#{ENV['HOMEPATH']}/.vagrant.d/insecure_private_key"]
+
+    config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+	
+	config.vm.define machine_name do |machine|
+		machine.vm.box = "kmm/ubuntu-xenial64"
+		# set machine name in vagrant status
+		machine.vm.define machine_name
+		machine.vm.hostname = machine_name
+		machine.vm.boot_timeout = 60
+		machine.vm.network "forwarded_port", host: "810#{i}", guest: 8100
+		machine.vm.network "forwarded_port", host: 2222, guest: 22, disabled: true
+		machine.vm.network "forwarded_port", host: "230#{i}", guest: 22, id: "ssh"
+		machine.vm.network "forwarded_port", host: "237#{i}", guest: 2377
+		machine.vm.network "forwarded_port", host: "794#{i}", guest: 7946
+		machine.vm.network "forwarded_port", host: "479#{i}", guest: 4789
+		machine.vm.provider "virtualbox" do |vb|
+			# Customize the amount of memory on the VM:
+			vb.memory = "1024"
+			vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+			vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+		end
+
+	    machine.vm.provision "file", source: "vagrant_ssh_key.pub", destination: "~/.ssh/authorized_keys"
+
+	end	
+  end
+end
