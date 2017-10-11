@@ -1,0 +1,16 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+
+  config.vm.define "jira-server" do |j|
+    j.vm.provider :docker do |d|
+      d.image = "cptactionhank/atlassian-jira-software:7.4.3"
+      d.name = "jira-server"
+      d.ports = ["9090:8080"]
+      # jira seems to require at least 2 GB memory
+      # d.create_args = ["--memory=2048m"]
+      d.volumes = ["jira-server:/var/atlassian/jira"]
+    end
+  end
+
+end
