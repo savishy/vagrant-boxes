@@ -1,16 +1,25 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 Vagrant.configure("2") do |config|
+	config.vm.define "jira-server" do |j|
+  
+		j.vm.box = "kmm/ubuntu-xenial64"
+		j.vm.network "forwarded_port", host: 8100, guest: 8100
 
-  config.vm.define "jira-server" do |j|
-    j.vm.provider :docker do |d|
-      d.image = "cptactionhank/atlassian-jira-software:7.4.3"
-      d.name = "jira-server"
-      d.ports = ["9090:8080"]
-      # jira seems to require at least 2 GB memory
-      # d.create_args = ["--memory=2048m"]
-      d.volumes = ["jira-server:/var/atlassian/jira"]
-    end
-  end
+		j.vm.provider "virtualbox" do |vb|
+			# Customize the amount of memory on the VM:
+			vb.memory = "1024"
+			vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+			vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+		end
 
+		j.vm.provision :docker do |d|
+			# run jenkins docker container
+			d.run "cptactionhank/atlassian-jira-software:7.4.3",
+				restart: "always",
+				daemonize: true,
+				auto_assign_name: false,
+				args: "--name jira -p '9090:8080'"
+		end
+	end
 end
