@@ -1,0 +1,52 @@
+Vagrant.configure("2") do |config|
+
+  unless Vagrant.has_plugin?("vagrant-puppet-install")
+    raise 'vagrant-puppet-install plugin is not installed!'
+  end
+
+  # config.vbguest.no_install = true
+  config.vbguest.no_remote = true
+  config.vbguest.yes = true
+
+  config.vm.network "private_network", ip: "84.84.87.95"
+  ["9200","5601"].each do |port|
+      config.vm.network "forwarded_port", guest: port, host: port
+  end
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+  config.vm.boot_timeout = 60
+
+  # create a synced folder `pwd`/work -> /work
+  config.vm.synced_folder "#{ENV['HOMEDRIVE']}\\#{ENV['HOMEPATH']}\\work", "/work", create: true,
+    owner: "vagrant", group: "vagrant"
+
+  # set machine name in vagrant status
+  machine_name = "vagrant-elk"
+  config.vm.define machine_name do |config2|
+  end
+  config.vm.box = "kmm/ubuntu-xenial64"
+  config.vm.provider :virtualbox do |vb|
+    vb.name = machine_name
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    vb.customize ["modifyvm", :id,"--memory", "2048"]
+  end
+
+  # Install Puppet with vagrant-puppet-install plugin
+  # https://github.com/petems/vagrant-puppet-install
+  config.puppet_install.puppet_version = "5.3.3"
+
+  config.vm.provision :shell, :path => "../scripts/disable-unattended-upgrades.sh"
+  config.vm.provision :shell do |s|
+    s.path = "../scripts/install-puppet-modules.sh"
+    s.args = ["puppetlabs-stdlib",
+              "puppetlabs-apt",
+              "puppetlabs-java",
+              "elastic-elasticsearch",
+              "elastic-kibana"]
+  end
+
+  config.vm.provision :puppet do |p|
+    p.environment_path = "provisioning/environments"
+    p.environment = "production"
+  end
+end

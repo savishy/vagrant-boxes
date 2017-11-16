@@ -33,17 +33,3 @@ fi
 PATHSTR="export PATH=$PATH:/opt/puppetlabs/bin"
 echo "$PATHSTR" >> /home/vagrant/.bashrc
 eval $PATHSTR
-echo "installing puppet modules"
-
-# install puppet modules into vagrant's puppet environment
-# install only if needed.
-
-{ puppet module list | grep puppetlabs-stdlib > /dev/null; } || \
-  puppet module install puppetlabs-stdlib --version 4.16.0
-
-{ puppet module list | grep nvogel-ansible > /dev/null; } || \
-  puppet module install nvogel-ansible --version 3.0.0
-
-# apt module 3.0.0+ causes trouble.
-{ puppet module list | grep puppetlabs-apt > /dev/null; } || \
-  puppet module install puppetlabs-apt --version 2.4.0
