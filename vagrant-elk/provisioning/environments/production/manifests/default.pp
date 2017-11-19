@@ -3,9 +3,15 @@
 include java
 class { 'elasticsearch':
   version => '6.0.0',
-  restart_on_change => true
+  restart_on_change => true,
+  instances => {
+    'es-01' => {
+      'config' => {
+        'network.host' => '0.0.0.0'
+      }
+    }
+  }
 }
-elasticsearch::instance { 'es-01': }
 
 class { 'kibana':
   config => {
