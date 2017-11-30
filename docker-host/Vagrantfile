@@ -1,4 +1,9 @@
+unless Vagrant.has_plugin?("vagrant-puppet-install")
+  raise 'vagrant-puppet-install plugin is not installed!'
+end
+
 Vagrant.configure("2") do |config|
+  config.puppet_install.puppet_version = "5.3.3"
 
   # port forwarding
   # 4243: docker
@@ -9,7 +14,7 @@ Vagrant.configure("2") do |config|
   # 9000: sonarqube
   # 5556,7001: weblogic
   config.vm.network "private_network", ip: "84.84.87.87"
-  ["4243","4440","3306","5556","7001","8080","8081","8082","9000"].each do |port|
+  ["4243","3306","8080","8081","8082","9000"].each do |port|
       config.vm.network "forwarded_port", guest: port, host: port
   end
 
@@ -42,7 +47,7 @@ Vagrant.configure("2") do |config|
 
     # increase allocated RAM so that docker containers
     # can run
-    vb.customize ["modifyvm", :id,"--memory", "2048"]
+    vb.customize ["modifyvm", :id,"--memory", "4096"]
   end
 
   config.vm.provider :hyperv do |hv|
@@ -69,15 +74,18 @@ Vagrant.configure("2") do |config|
   # disable unattended upgrades which cause provisioning to fail
   config.vm.provision :shell, :path => "../scripts/disable-unattended-upgrades.sh"
 
-  # install puppet before provisioning with puppet (agentless mode)
-  config.vm.provision :shell, :path => "../scripts/install-puppet.sh"
+  config.vm.provision :shell do |s|
+    s.path = "../scripts/install-puppet-modules.sh"
+    s.args = ["puppetlabs-stdlib",
+              "puppetlabs-apt",
+              "puppetlabs-java"]
+  end
 
   # provision with puppet
   config.vm.provision :puppet do |puppet|
-    puppet.module_path = "environments/production/modules"
-    puppet.manifests_path = "environments/production/manifests/"
+    puppet.environment_path = "environments"
+    puppet.environment = "production"
     #puppet.options = "--verbose --debug"
-    puppet.hiera_config_path = "hiera/hiera.yaml"
   end
 
   puts "---------------------------------"
