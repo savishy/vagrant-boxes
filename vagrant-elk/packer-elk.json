@@ -1,0 +1,38 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `VAGRANT_AWS_ACCESS_KEY`}}",
+    "aws_secret_key": "{{env `VAGRANT_AWS_SECRET_KEY`}}"
+  },
+
+  "builders": [
+    {
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "source_ami_filter": {
+      "filters": {
+        "name": "*packer-ubuntu-base-*"
+      },
+      "owners": ["006475447375"],
+      "most_recent": true
+    },
+    "instance_type": "m3.medium",
+    "ssh_username": "ubuntu",
+    "ami_name": "packer-elk-{{timestamp}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "puppet-masterless",
+      "extra_arguments": [
+        "--modulepath=/etc/puppetlabs/code/environments/production/modules"
+      ],
+      "puppet_bin_dir": "/opt/puppetlabs/bin",
+      "manifest_file": "provisioning/environments/production/manifests",
+      "module_paths": ["provisioning/environments/production/modules"]
+    }
+  ],
+
+  "post-processors": ["vagrant"]
+}

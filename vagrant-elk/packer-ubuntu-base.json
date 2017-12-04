@@ -1,0 +1,48 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `VAGRANT_AWS_ACCESS_KEY`}}",
+    "aws_secret_key": "{{env `VAGRANT_AWS_SECRET_KEY`}}",
+    "script_path": "../scripts",
+    "upgrade_script": "disable-unattended-upgrades.sh",
+    "puppet_install_script": "install-puppet.sh",
+    "puppet_module_script": "install-puppet-modules.sh",
+    "puppet_modules": "puppetlabs-stdlib puppetlabs-apt puppetlabs-java elastic-elasticsearch elastic-kibana"
+  },
+
+  "builders": [
+    {
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "source_ami_filter": {
+      "filters": {
+        "image-id": "ami-aa2ea6d0"
+      },
+      "most_recent": true
+    },
+    "instance_type": "m3.medium",
+    "ssh_username": "ubuntu",
+    "ami_name": "packer-ubuntu-base-{{timestamp}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{user `script_path`}}/",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "chmod 777 /tmp/{{user `puppet_install_script`}}",
+        "chmod 777 /tmp/{{user `puppet_module_script`}}",
+        "chmod 777 /tmp/{{user `upgrade_script`}}",
+        "bash /tmp/{{user `puppet_install_script`}}",
+        "bash /tmp/{{user `upgrade_script`}}",
+        "bash /tmp/{{user `puppet_module_script`}} {{user `puppet_modules`}}"
+      ]
+    }
+  ]
+
+}
