@@ -1,0 +1,7 @@
+---
+git::configs:
+  user.name: 'Vish'
+  user.email: 'savishy.pv@gmail.com'
+  alias.co: 'checkout'
+  alias.ci: 'commit'
+  alias.st: 'status'

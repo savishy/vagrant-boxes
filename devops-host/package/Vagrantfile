@@ -1,0 +1,15 @@
+Vagrant.configure("2") do |config|
+  machine_name = "devops-host"
+  config.vm.provider :virtualbox do |vb|
+    vb.name = machine_name
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    vb.customize ["modifyvm", :id,"--memory", "4096"]
+  end
+  ["4243","3306","8080","8081","8082","9000"].each do |port|
+      config.vm.network "forwarded_port", guest: port, host: port
+  end
+
+  config.vm.box = "devops-host"
+  config.vm.box_url = "https://github.com/savishy/vagrant-boxes/releases/download/v1.0.1-devops-host/devops-host-virtualbox-1.0.1.box"
+end
