@@ -1,13 +1,8 @@
 #!/bin/bash
 set -e
-# color for bash
-# Typically just a matter of uncommenting.
-sed -i -e 's/#force_color_prompt=yes/force_color_prompt=yes/g' /home/vagrant/.bashrc
-
-
+export DEBIAN_FRONTEND=noninteractive
 # not installing puppet 4.6. see https://github.com/savishy/vagrant-boxes/issues/1
-
-# This installs puppet for Ubuntu Trusty 14.04 only.
+# This installs puppet for Ubuntu only.
 
 if [[ `dpkg-query -W -f='${Status}' puppet-common 2>&1` =~ "installed" ]]; then
   echo "puppet-common already installed; no action"
@@ -22,14 +17,16 @@ fi
 
 if [[ $INSTALL -eq 1 ]]; then
   echo "Installing Puppet ..."
+  sudo apt-get install -y wget unzip
   wget http://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
   sudo dpkg -i puppetlabs-release-pc1-xenial.deb
   sudo apt-get update -qqy
-  sudo apt-get install -y puppet-common #masterless puppet
-  sudo apt-get install -y puppet        #masterful puppet
+  sudo apt-get install -y puppetserver
 fi
 
 # update PATH
-PATHSTR="export PATH=$PATH:/opt/puppetlabs/bin"
-echo "$PATHSTR" >> /home/vagrant/.bashrc
-eval $PATHSTR
+if [[ -d "/home/vagrant/" ]]; then
+  PATHSTR="export PATH=$PATH:/opt/puppetlabs/bin"
+  echo "$PATHSTR" >> /home/vagrant/.bashrc
+  eval $PATHSTR
+fi
