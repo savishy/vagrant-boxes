@@ -1,0 +1,22 @@
+---
+- name: setup spinnaker
+  hosts: all
+  vars:
+    - halyard_user: vagrant
+    - docker_user: vagrant
+    - minio_user: vagrant
+    - minio_port: 9001
+    - minio_access_key: "AKIAIOSFODNN7EXAMPLE"
+    - minio_secret_key: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    - spinnaker_aws_access_key: "AKIAJT3KJZEKHCJP3WPA" 
+    - spinnaker_aws_secret_key: "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"
+    - spinnaker_aws_account_name: "006475447375"
+    - spinnaker_aws_account_id: "006475447375"
+    - spinnaker_aws_role: "role/spinnakerManaged"
+    - spinnaker_version: 1.5.4
+    - spinnaker_port: 9000
+  roles:
+  - setup
+  - ansible-role-docker
+  - minio
+  - halyard

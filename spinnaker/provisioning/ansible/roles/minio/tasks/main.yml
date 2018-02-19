@@ -1,0 +1,27 @@
+---
+
+- name: minio directory
+  file: 
+    path: /opt/minio_data
+    state: directory
+    owner: "{{halyard_user}}"
+    group: "{{halyard_user}}"
+  become: true
+
+- name: run minio docker container
+  docker_container:
+    name: minio
+    image: minio/minio
+    state: started
+    published_ports:
+    - "{{minio_port}}:9000"
+    command: server /data
+    volumes:
+    - "/opt/minio_data:/data"
+    env:
+      MINIO_ACCESS_KEY: "{{minio_access_key}}"
+      MINIO_SECRET_KEY: "{{minio_secret_key}}"
+
+  become: true
+
+# docker run -p 9000:9000 --name minio1 -v /mnt/data:/data -v /mnt/config:/root/.minio minio/minio server /data

@@ -1,0 +1,74 @@
+---
+- name: create halyard user config dir
+  file:
+    path: "/home/{{halyard_user}}/.hal"
+    state: directory
+
+- name: download halyard script 
+  get_url: 
+    url: https://raw.githubusercontent.com/spinnaker/halyard/master/install/debian/InstallHalyard.sh
+    dest: /tmp
+
+- name: install halyard
+  shell: |
+    export HAL_USER={{halyard_user}} 
+    bash /tmp/InstallHalyard.sh
+  become: true
+
+- name: delete script
+  file:
+    name: /tmp/InstallHalyard.sh
+    state: absent
+
+- name: test drive halyard
+  command: hal -v
+
+- name: configure halyard with minio storage
+  shell: |
+    echo {{minio_secret_key}} | hal config storage s3 edit --endpoint http://localhost:{{minio_port}} \
+    --access-key-id {{minio_access_key}} \
+    --secret-access-key
+    hal config storage edit --type s3
+
+
+- name: configure halyard with aws credentials
+  shell: |
+    echo {{spinnaker_aws_secret_key}} | hal config provider aws edit \
+    --access-key-id {{spinnaker_aws_access_key}} \
+    --secret-access-key
+
+
+- name: configure halyard with aws role 
+  shell: |
+    hal config provider aws account add {{spinnaker_aws_account_name}} \
+    --account-id {{spinnaker_aws_account_id}} \
+    --assume-role {{spinnaker_aws_role}}
+
+- name: enable spinnaker aws provider
+  shell: |
+    hal config provider aws enable
+
+- name: choose spinnaker version
+  shell: |
+    hal config version edit --version {{spinnaker_version}}
+
+- name: deploy spinnaker
+  shell: |
+    hal deploy apply
+  become: true
+
+
+# - name: run docker container
+#   docker_container:
+#     name: halyard
+#     image: gcr.io/spinnaker-marketplace/halyard:stable
+#     state: started
+#     exposed_ports:
+#     - 8084:8084
+#     - 9000:9000
+#     command: "bash"
+#     interactive: yes
+#     tty: yes
+#     volumes:
+#      - "/home/{{halyard_user}}/.hal:/root/.hal"
+#   become: vagrant
