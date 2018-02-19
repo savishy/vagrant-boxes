@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+vars = JSON.parse(File.read(File.expand_path "./vars.json"))
+Vagrant.configure("2") do |config|
+    config.vm.box = vars['vb_box']
+    config.vm.box_url = vars['vb_box_url']
+    config.vm.boot_timeout = 60
+    config.vm.provider "virtualbox" do |vb|
+        # Customize the amount of memory on the VM:
+        vb.memory = vars['vb_memory']
+        vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    end
+
+    server_name = vars['server_name']
+    agent_prefix = vars['agent_prefix']
+    vmIndex = (0..1)
+
+    config.vm.define server_name do |machine|
+        machine.vm.hostname = server_name
+        machine.vm.network "forwarded_port", host: "9990", guest: 8080        
+        machine.vm.provision :docker do |d|
+            # run jenkins docker container
+            d.run "rancher/server:stable",
+                restart: "unless-stopped",
+                daemonize: true,
+                auto_assign_name: false,
+                args: "--name #{server_name} -p '8080:8080'"
+        end
+    
+    end
+
+    vmIndex.each do |i|	
+        config.vm.define "#{agent_prefix}#{i}" do |machine|
+           machine.vm.provision "file", source: "../scripts/add_host_to_rancher.py", destination: "/tmp/"
+	    end
+    end
+end

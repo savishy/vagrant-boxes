@@ -1,0 +1,9 @@
+{
+    "server_name": "rancher-server",
+    "agent_prefix": "rancher-agent-",
+    "vb_box": "packer-ubuntu1604-base-2017-12-15-10-10-26_virtualbox.box",
+    "vb_box_ver": "0",
+    "vb_box_url": "https://github.com/agilityroots/vagrant-toolchains/releases/download/2017-12-15-ubuntu1604-base/packer-ubuntu1604-base-2017-12-15-10-10-26_virtualbox.box",
+    "vb_memory": "2048"  
+  }
+  
