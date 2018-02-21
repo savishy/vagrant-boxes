@@ -1,12 +1,14 @@
+vars = JSON.parse(File.read(File.expand_path "./vars.json"))
 Vagrant.configure("2") do |config|
-  config.vm.box = "mwrock/Windows2016"
-  machine_name = "windowsserver2016"
+  config.vm.box = vars['vb_box']
+  machine_name = vars['machine_name']
+  vm_memory = vars['vm_memory']
   config.vm.define machine_name
 
   config.vm.provider :hyperv do |hv|
     hv.vmname = machine_name
     hv.cpus = 1
-    hv.memory =  2048
+    hv.memory =  vm_memory
     hv.enable_virtualization_extensions = true
     hv.ip_address_timeout = 240
     hv.vm_integration_services = {
@@ -17,6 +19,15 @@ Vagrant.configure("2") do |config|
       time_synchronization: true,
       vss: true
     }
+  end
+
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    vb.customize ["modifyvm", :id,"--memory", vm_memory]
+    config.vm.network :forwarded_port, host: 9999, guest: 80, id: "octopus"
+    vb.name = machine_name
+  end
 
   config.vm.provision :shell do |s|
     s.path = "scripts/installChocolatey.ps1"
@@ -32,6 +43,11 @@ Vagrant.configure("2") do |config|
     s.powershell_args = "-executionpolicy unrestricted"
   end
 
+  config.vm.provision :shell do |s|
+    s.path = "scripts/chocoInstallOctoServer.ps1"
+    s.args = ["Y","Y"]
+    s.privileged = true
+    s.powershell_args = "-executionpolicy unrestricted"
   end
 
 end
