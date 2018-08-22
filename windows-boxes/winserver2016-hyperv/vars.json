@@ -1,0 +1,5 @@
+{
+    "vb_box": "mwrock/Windows2016",
+    "machine_name": "windowsserver2016",
+    "vm_memory": "3072"
+}
