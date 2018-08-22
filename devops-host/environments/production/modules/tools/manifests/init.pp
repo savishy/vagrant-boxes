@@ -1,4 +1,4 @@
-include git
+include apt
 # install common tools
 class tools {
 

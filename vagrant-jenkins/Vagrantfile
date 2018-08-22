@@ -1,23 +1,24 @@
 Vagrant.configure("2") do |config|
-  config.vm.network "private_network", ip: "84.84.87.90"
+
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+
   ["4244","9095"].each do |port|
       config.vm.network "forwarded_port", guest: port, host: port
   end
-
-  # fix for "stdin: is not a tty" and "ttyname: inappropriate ioctl for device"
-  # https://github.com/mitchellh/vagrant/issues/1673#issuecomment-28288042
-  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-
-  # if machine fails to boot don't wait too long.
-  config.vm.boot_timeout = 60
-
+  # Docker-Ready Box.
+  #config.vm.box = "phusion/ubuntu-14.04-amd64"
+  config.vm.box = "kmm/ubuntu-xenial64"
 
   # set machine name in vagrant status
-  config.vm.define "vagrant-jenkins"
-  config.vm.hostname = "vagrant-jenkins"
+  machine_name = "vagrant-jenkins"
+  config.vm.define machine_name
+  config.vm.hostname = machine_name
   config.vm.provider :virtualbox do |vb|
     # set the name of box in Virtualbox GUI
-    vb.name = "vagrant-jenkins"
+    vb.name = machine_name
     # allow access to internet
     # (esp machines listed in your etc hosts)
     # http://stackoverflow.com/a/18457420/682912
@@ -29,11 +30,25 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id,"--memory", "2048"]
   end
 
-  # Docker-Ready Box.
-  #config.vm.box = "phusion/ubuntu-14.04-amd64"
-  config.vm.box = "bento/ubuntu-16.04"
+   config.vm.provider :hyperv do |hv|
+     hv.vmname = machine_name
+     hv.cpus = 1
+     hv.memory =  2048
+     hv.enable_virtualization_extensions = true
+     hv.ip_address_timeout = 240
+     hv.vm_integration_services = {
+       guest_service_interface: true,
+       heartbeat: true,
+       key_value_pair_exchange: true,
+       shutdown: true,
+       time_synchronization: true,
+       vss: true
+     }
+   end
+
   # install puppet before provisioning with puppet (agentless mode)
   config.vm.provision :shell, :path => "../scripts/install-puppet.sh"
+
 
   # provision with puppet
   config.vm.provision :puppet do |puppet|
