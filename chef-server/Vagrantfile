@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  machine_name = "chefserver"
+  config.vm.box = "kmm/ubuntu-xenial64"
+  # set machine name in vagrant status
+  config.vm.define machine_name
+  config.vm.hostname = machine_name
+  config.vm.boot_timeout = 60
+
+  # Update hosts entry to resolve the Chef Server by Hostname.
+  # Requires vagrant-hostmanager plugin.
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+
+  config.vm.provider "virtualbox" do |vb|
+    # Customize the amount of memory on the VM:
+    vb.memory = "1024"
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+   end
+
+   config.vm.provider :hyperv do |hv|
+     hv.vmname = machine_name
+     hv.cpus = 1
+     hv.memory =  2048
+     hv.enable_virtualization_extensions = true
+     hv.ip_address_timeout = 240
+     hv.vm_integration_services = {
+       guest_service_interface: true,
+       heartbeat: true,
+       key_value_pair_exchange: true,
+       shutdown: true,
+       time_synchronization: true,
+       vss: true
+     }
+   end
+
+   # Send configuration json file.
+   config.vm.provision "file", source: "config.json", destination: "/tmp/config.json"
+
+   # disable unattended upgrades which cause provisioning to fail
+   config.vm.provision :shell, :path => "../scripts/disable-unattended-upgrades.sh"
+
+   # install chef server
+   config.vm.provision :shell, :path => "../scripts/install-chef-server.sh"
+
+
+   puts "--------------------------------------------------------------------"
+   puts "This box is a Chef Server."
+   puts "--------------------------------------------------------------------"
+
+end

@@ -1,0 +1,10 @@
+{
+  "run_list": [
+    "chef-server::default"
+  ],
+  "chef-server": {
+    "configuration": "notification_email 'chef-server@example.com'",
+    "version": "12.17.33",
+    "accept_license": true
+  }
+}

@@ -1,0 +1,3 @@
+- Move the .elisp folder to the path "~/.elisp"
+- Move .emacs file to ~/.emacs
+-- You can try creating symlinks to these locations; dont know if that will work.
